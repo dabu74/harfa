@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="pl" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harfa Boża (1921) — J. F. Rutherford</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Merriweather (treść książkowa) oraz Inter (interfejs użytkownika) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        serif: ['Merriweather', 'Georgia', 'serif'],
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Zmienne CSS definiujące motywy kolorystyczne */
+        :root {
+            --bg-main: #f9f6f0;
+            --bg-card: #ffffff;
+            --bg-nav: rgba(249, 246, 240, 0.94);
+            --text-main: #1e1e1e;
+            --text-muted: #57534e;
+            --accent: #8b5a2b;
+            --accent-hover: #6d451f;
+            --accent-soft: rgba(139, 90, 43, 0.1);
+            --border-color: #e6dfd3;
+            --quote-bg: #f3ede2;
+        }
+
+        html.dark {
+            --bg-main: #121417;
+            --bg-card: #1c1f24;
+            --bg-nav: rgba(18, 20, 23, 0.94);
+            --text-main: #e4e6eb;
+            --text-muted: #9ca3af;
+            --accent: #d4a359;
+            --accent-hover: #e5b86f;
+            --accent-soft: rgba(212, 163, 89, 0.14);
+            --border-color: #2d323b;
+            --quote-bg: #23272e;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            transition: background-color 0.35s ease, color 0.35s ease;
+        }
+
+        .book-surface {
+            background-color: var(--bg-card);
+            border-color: var(--border-color);
+            transition: background-color 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+        }
+
+        .nav-surface {
+            background-color: var(--bg-nav);
+            border-color: var(--border-color);
+            backdrop-filter: blur(10px);
+        }
+
+        .accent-text { color: var(--accent); }
+        .accent-bg { background-color: var(--accent); }
+        .accent-soft-bg { background-color: var(--accent-soft); }
+        .border-theme { border-color: var(--border-color); }
+        .muted-text { color: var(--text-muted); }
+
+        /* Stylizacja typograficzna treści książki */
+        .reader-content {
+            font-family: 'Merriweather', Georgia, serif;
+            line-height: 1.85;
+            max-width: 68ch;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .reader-content p {
+            margin-bottom: 1.35em;
+            text-align: justify;
+            hyphens: auto;
+        }
+
+        .para-num {
+            display: inline-block;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.72em;
+            font-weight: 700;
+            color: var(--accent);
+            background-color: var(--accent-soft);
+            padding: 0.1rem 0.45rem;
+            border-radius: 0.35rem;
+            margin-right: 0.45rem;
+            vertical-align: 1px;
+            user-select: none;
+        }
+
+        .scripture-quote {
+            background-color: var(--quote-bg);
+            border-left: 3px solid var(--accent);
+            padding: 1rem 1.25rem;
+            margin: 1.4rem 0;
+            border-radius: 0 0.6rem 0.6rem 0;
+            font-style: italic;
+        }
+
+        .poem-box {
+            background-color: var(--quote-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 1.75rem;
+            margin: 2rem auto;
+            max-width: 48ch;
+            text-align: center;
+        }
+
+        /* Rozmiary czcionki sterowane klasami */
+        .font-size-sm .reader-content { font-size: 0.95rem; }
+        .font-size-md .reader-content { font-size: 1.08rem; }
+        .font-size-lg .reader-content { font-size: 1.22rem; }
+        .font-size-xl .reader-content { font-size: 1.36rem; }
+
+        /* Niestandardowy pasek przewijania dla TOC */
+        ::-webkit-scrollbar { width: 7px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(139, 90, 43, 0.35);
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(139, 90, 43, 0.6); }
+
+        .toc-link.active {
+            background-color: var(--accent-soft);
+            color: var(--accent);
+            font-weight: 600;
+            border-left: 3px solid var(--accent);
+        }
+    </style>
+</head>
+<body class="font-sans antialiased font-size-md selection:bg-amber-700/20">
+
+    <!-- Pasek postępu czytania na samej górze -->
+    <div class="fixed top-0 left-0 w-full h-1.5 z-50 bg-transparent">
+        <div id="reading-progress" class="h-full accent-bg transition-all duration-150 ease-out" style="width: 0%;"></div>
+    </div>
+
+    <!-- Górny pasek nawigacji czytnika -->
+    <header class="sticky top-0 z-40 nav-surface border-b transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 h-16 flex items-center justify-between gap-2">
+            <!-- Lewa strona: Przycisk TOC + Tytuł dzieła -->
+            <div class="flex items-center gap-3 min-w-0">
+                <button id="toc-toggle-btn" type="button" aria-label="Otwórz spis treści"
+                    class="p-2.5 rounded-xl border border-theme hover:opacity-80 transition flex items-center gap-2 text-sm font-medium shrink-0">
+                    <svg class="w-5 h-5 accent-text" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h10"/>
+                    </svg>
+                    <span class="hidden md:inline">Spis Rzeczy</span>
+                </button>
+                <div class="truncate">
+                    <span class="font-serif font-bold text-base sm:text-lg tracking-tight block truncate">Harfa Boża</span>
+                    <span class="text-xs muted-text hidden sm:block">J. F. Rutherford • Wydanie 1921 r.</span>
+                </div>
+            </div>
+
+            <!-- Środek / Prawa strona: Kontrolki czcionki oraz Przełącznik motywu -->
+            <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+                <!-- Regulacja rozmiaru tekstu -->
+                <div class="flex items-center rounded-xl border border-theme overflow-hidden book-surface" role="group" aria-label="Rozmiar czcionki">
+                    <button id="font-dec" type="button" title="Zmniejsz czcionkę"
+                        class="px-2.5 py-2 text-xs sm:text-sm font-semibold hover:opacity-75 transition border-r border-theme">A-</button>
+                    <button id="font-reset" type="button" title="Domyślna czcionka"
+                        class="px-2.5 py-2 text-xs sm:text-sm font-semibold hover:opacity-75 transition border-r border-theme">A</button>
+                    <button id="font-inc" type="button" title="Powiększ czcionkę"
+                        class="px-2.5 py-2 text-xs sm:text-sm font-semibold hover:opacity-75 transition">A+</button>
+                </div>
+
+                <!-- Przełącznik motywu Jasny / Ciemny -->
+                <button id="theme-toggle" type="button" aria-label="Przełącz motyw kolorystyczny"
+                    class="flex items-center gap-2 px-3.5 py-2 rounded-xl border border-theme book-surface font-medium text-xs sm:text-sm shadow-sm hover:opacity-90 transition">
+                    <span id="theme-icon-sun" class="hidden text-amber-400">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"/>
+                        </svg>
+                    </span>
+                    <span id="theme-icon-moon" class="text-amber-800">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>
+                        </svg>
+                    </span>
+                    <span id="theme-label">Tryb ciemny</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Tło dla mobilnego/wysuwanego spisu treści -->
+    <div id="toc-backdrop" class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden transition-opacity"></div>
+
+    <!-- Główny układ: Boczny TOC + Kolumna czytelnika -->
+    <div class="max-w-7xl mx-auto flex relative">
+
+        <!-- Boczny / Wysuwany Spis Treści -->
+        <aside id="toc-sidebar"
+            class="fixed lg:sticky top-16 left-0 z-40 h-[calc(100vh-4rem)] w-80 shrink-0 book-surface border-r overflow-y-auto transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
+            <div class="p-5">
+                <div class="flex items-center justify-between mb-4 pb-3 border-b border-theme">
+                    <div>
+                        <h2 class="text-xs font-bold uppercase tracking-wider accent-text">Spis Rzeczy</h2>
+                        <p class="text-xs muted-text mt-0.5">10 Strun Harfy Bożej</p>
+                    </div>
+                    <button id="toc-close-btn" type="button" class="lg:hidden p-1.5 rounded-lg border border-theme muted-text hover:opacity-80">
+                        ✕
+                    </button>
+                </div>
+
+                <nav id="toc-nav" class="space-y-1 text-sm">
+                    <a href="#strona-tytulowa" class="toc-link block px-3 py-2 rounded-lg transition hover:opacity-80">Strona Tytułowa i Dedykacja</a>
+                    <a href="#przedmowa" class="toc-link block px-3 py-2 rounded-lg transition hover:opacity-80">Przedmowa (1921)</a>
+                    <a href="#spis-rzeczy-tabela" class="toc-link block px-3 py-2 rounded-lg transition hover:opacity-80">Wykaz Oryginalny Stron</a>
+                    <div class="pt-2 pb-1 px-3 text-[11px] font-bold uppercase tracking-wider muted-text">Rozdziały i Struny</div>
+                    <a href="#rozdzial-1" class="toc-link block px-3 py-2 rounded-lg transition hover:opacity-80">Rozdział I: Harfa Boża</a>
+                    <a href="#rozdzial-2" class="toc-link block px-3 py-2 rounded-lg transition hover:opacity-80">Rozdział II: Struna 1 — Stworzenie</a>
+                    <a href="#rozdzial-3" class="toc-link block px-3 py-2 rounded-lg transition hover:opacity-80">Rozdział III: Struna 2 — Okazanie Sprawiedliwości</a>
+                    <a href="#rozdzial-4" class="toc-link block px-3 py-2 rounded-lg transition hover:opacity-80">Rozdział IV: Struna 3 — Obietnica Abrahamowa</a>
+                    <a href="#rozdzial-5" class="toc-link block px-3 py-2 rounded-lg transition hover:opacity-80">Rozdział V: Struna 4 — Narodzenie Jezusa</a>
+                    <a href="#rozdzial-6" class="toc-link block px-3 py-2 rounded-lg transition hover:opacity-80">Rozdział VI: Struna 5 — Okup</a>
+                    <a href="#rozdzial-7" class="toc-link block px-3 py-2 rounded-lg transition hover:opacity-80">Rozdział VII: Struna 6 — Zmartwychwstanie</a>
+                    <a href="#rozdzial-8" class="toc-link block px-3 py-2 rounded-lg transition hover:opacity-80">Rozdział VIII: Struna 7 — Objawiona Tajemnica</a>
+                    <a href="#rozdzial-9" class="toc-link block px-3 py-2 rounded-lg transition hover:opacity-80">Rozdział IX: Struna 8 — Powrót Naszego Pana</a>
+                    <a href="#rozdzial-10-11" class="toc-link block px-3 py-2 rounded-lg transition hover:opacity-80">Struna 9 i 10: Uwielbienie i Przywrócenie</a>
+                </nav>
+
+                <!-- Narzędzie szybkiego przełączania pytań -->
+                <div class="mt-6 pt-4 border-t border-theme">
+                    <button id="toggle-all-questions" type="button"
+                        class="w-full py-2.5 px-3 rounded-xl text-xs font-semibold border border-theme accent-soft-bg accent-text hover:opacity-85 transition">
+                        Rozwiń / Zwiń wszystkie pytania
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Główny obszar lektury -->
+        <main class="flex-1 min-w-0 px-4 sm:px-8 lg:px-12 py-8 sm:py-12">
+            <div class="max-w-3xl mx-auto space-y-12">
+
+                <!-- STRONA TYTUŁOWA I DEDYKACJA -->
+                <section id="strona-tytulowa" class="book-section book-surface border rounded-2xl p-6 sm:p-12 shadow-sm text-center">
+                    <!-- Ozdobny symbol Harfy w SVG -->
+                    <div class="mx-auto w-20 h-20 mb-6 flex items-center justify-center rounded-full accent-soft-bg accent-text">
+                        <svg class="w-11 h-11" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.2">
+                            <path d="M18 54V12c0-3 2-5 5-5 4 0 7 4 12 7 6 3.5 13 3 16 1 2 4-1 13-5 20-4 7-6 13-6 19H18z" stroke-linejoin="round"/>
+                            <path d="M14 54h32" stroke-linecap="round" stroke-width="3"/>
+                            <line x1="23" y1="10" x2="23" y2="54" stroke-width="1.2"/>
+                            <line x1="27" y1="12" x2="27" y2="54" stroke-width="1.2"/>
+                            <line x1="31" y1="14" x2="31" y2="54" stroke-width="1.2"/>
+                            <line x1="35" y1="16" x2="35" y2="54" stroke-width="1.2"/>
+                            <line x1="39" y1="17" x2="39" y2="54" stroke-width="1.2"/>
+                            <line x1="43" y1="17" x2="43" y2="54" stroke-width="1.2"/>
+                        </svg>
+                    </div>
+
+                    <p class="text-xs uppercase tracking-[0.25em] accent-text font-semibold mb-3">Podręcznik do badania Biblii</p>
+                    <h1 class="font-serif text-4xl sm:text-5xl font-bold tracking-tight mb-4">Harfa Boża</h1>
+                    <p class="font-serif text-lg sm:text-xl italic muted-text max-w-xl mx-auto mb-6">
+                        Dowody Potwierdzające Że Miliony Ludzi z Obecnie Żyjących Nie Umrą
+                    </p>
+                    <p class="text-sm muted-text max-w-lg mx-auto mb-8">
+                        Przystosowany szczególnie dla początkujących; z licznymi pytaniami i wyciągami z Biblii.<br>
+                        <span class="font-semibold">Wydanie 1,020,000</span>
+                    </p>
+
+                    <div class="border-t border-b border-theme py-5 my-6 max-w-md mx-auto">
+                        <p class="text-sm font-medium">Opracował <span class="font-bold">J. F. Rutherford</span></p>
+                        <p class="text-xs muted-text mt-1">Autor dzieł p.t.: „Czy Żywi Mogą Rozmawiać z Umarłymi?”, „Miliony Ludzi z Obecnie Żyjących Nie Umrą!” etc., etc.</p>
+                    </div>
+
+                    <div class="text-xs muted-text space-y-1 mb-10">
+                        <p class="font-semibold uppercase tracking-wider">Wydawcy: International Bible Students Association</p>
+                        <p>Brooklyn, New York, U. S. A. • Warszawa, Londyn, Toronto, Melbourne, Cape Town, Örebro, Barmen, Berne</p>
+                    </div>
+
+                    <!-- Dedykacja -->
+                    <div class="scripture-quote max-w-lg mx-auto text-center !border-l-0 border-t border-b border-theme !rounded-xl py-6">
+                        <p class="font-serif text-base sm:text-lg leading-relaxed">
+                            Niewidzialnemu Królowi Chwały<br>
+                            teraz obecnemu<br>
+                            dla dobra dzisiejszych pokoleń na ziemi,<br>
+                            mających stanowić Jego wiernych poddanych<br>
+                            tę książkę poświęcono
+                        </p>
+                        <p class="mt-4 text-sm font-semibold accent-text">
+                            „Nie przeminie ten wiek ażby się to wszystko stało.” — Ew. Mateusza 24:34.
+                        </p>
+                        <p class="mt-3 text-[11px] muted-text not-italic">Copyrighted 1921 by Peoples Pulpit Association, Brooklyn, N. Y., U. S. A.</p>
+                    </div>
+                </section>
+
+                <!-- PRZEDMOWA -->
+                <article id="przedmowa" class="book-section book-surface border rounded-2xl p-6 sm:p-12 shadow-sm">
+                    <div class="text-center mb-8">
+                        <span class="text-xs uppercase tracking-widest accent-text font-bold">Słowo Wstępne</span>
+                        <h2 class="font-serif text-2xl sm:text-3xl font-bold mt-1">Przedmowa</h2>
+                    </div>
+                    <div class="reader-content">
+                        <p>Okazuje się wielkie zapotrzebowanie podręcznika dla rozpoczynających badanie Pisma Świętego. Książka ta jest wydana celem zaspokojenia tego wymagania. Treść jej ułożona jest podług rozwoju. Do każdego rozdziału podane są pytania punktu powyżej omówionego, by tym sposobem ułatwić nauczającemu skierowanie uwagi ucznia na ważniejsze ustępy. Numer umieszczony przy końcu każdego pytania odnosi się do paragrafu, pod takim samym numerem, gdzie znajduje się odpowiedź.</p>
+                        <p>Jehowa posiadał wielki plan jeszcze przed założeniem gruntów świata; lecz nikt o tym planie nie wiedział. Podczas pierwszych czterech tysięcy lat historyi człowieka Boski Plan był stale trzymany w tajemnicy. Zaczął On objawiać go ludziom dopiero dziewiętnaście stuleci temu, i to tylko tym, którzy ofiarowali się na czynienie woli Jego. Obietnicę dano, że jaśniejsze światło przyjdzie przy końcu tego wieku, i zadosyć uczyniono tej obietnicy. Żyjemy właśnie w tym czasie, co jest jasno pokazane w tem dziele. Książka ta wskazuje na główne zarysy Boskiego Planu, który posiada pewien określony porządek i sposób rozwoju.</p>
+                        <p>Na ogół ludziom dawano mało objaśnień odnośnie do Biblii. Nawet ci, którzy uczęszczali do niedzielnych szkół, nauczyli się tylko tekstów biblijnych, a nie ich znaczenia. Podobnie, jak prorocy ze starożytności, słyszeli coś, lecz co, tego nie rozumieli. Właściwą przyczyną tego było, że nie nadszedł stosowny czas na zrozumienie Boskiego Planu. Lecz teraz czas ten już nadszedł.</p>
+                        <p>Z powodu zmian epokowych, wchodzących obecnie w życie, ważność badania Biblii potęguje się. Jeśli niezbędnem jest uczyć powstające pokolenie czytania, pisania i rachunków w szkołach ludowych, daleko więcej ważnem jest, aby wyszkolić je w rzeczach objawionych z Boskiego Planu, zmierzających do podniesienia i błogosławienia ludzkości.</p>
+                        <p>Nie mamy zamiaru, lub chęci nakłonić kogokolwiek z Czytelników do zapisania się do jakiejś organizacyi, sekty lub towarzystwa. Jedynym celem tej książki jest nieść pomoc szczerze szukającym prawdy w Biblii, chcącym poznać znaczenie wypadków doby dzisiejszej, i przygotować choćby niektórych z nich na przyjęcie błogosławieństw, które wkrótce będą udziałem rodzaju ludzkiego.</p>
+                        <p>Gdybyś wiedział, szanowny Czytelniku, że wkrótce nastąpi gruntowna zmiana na lepsze w rządach, i że twoje dziatki wezmą udział w sprawach nowego rządu, skwapliwie starałbyś się o to, by zaznajomić je z tym nowym ustrojem. Wszyscy zgadzają się z tem, że wielkie zmiany nastąpiły od wybuchu światowej wojny i że dalej są one wprowadzane. A zmiany te są największej doniosłości w historyi. Lecz co one oznaczają? Właściwą odpowiedzią jest, że stary świat, czyli społeczny i polityczny porządek, się skończył i szybko przemija, i że nastąpił czas na nowy a lepszy porządek rzeczy, który wkrótce będzie ustanowiony.</p>
+                        <p>W niniejszem dziele posługujemy się cytatami z Biblii tłumaczonej z angielskiego wydania Króla Jakóba (King James Version) oraz Biblii Gdańskiej i ks. Wujka. Dobrze zrobi Czytelnik, gdy, czytając tę książkę, mieć będzie przed sobą Pismo Św., aby wywody autora stwierdzić i tym sposobem być przekonanym w swym własnym umyśle.</p>
+                        <p>Harfa jest instrumentem, który w ręku wprawionego muzyka wydaje tony, sprowadzające wesołość i ukojenie słuchającym. Harfa Boża, będąc właściwie użytą, sprowadza pokój dla umysłu, a radość dla serca. Zawarte tu poselstwo, wzięte ze Słowa Bożego, wysyłamy z modlitwą, by sprowadziło ono błogosławieństwo dla wielu i rozweseliło strapionych, by wiązało rany skruszonego serca i zwiastowało pojmanym wyzwolenie, a głównie, by wszystkim szczerze czytającym dało lepszą i głębszą ocenę Jehowy i Zbawiciela ludzkości.</p>
+                        <p class="text-right italic text-sm muted-text mt-6">Brooklyn, N. Y., dnia 1-go Października 1921.</p>
+                    </div>
+                </article>
+
+                <!-- SPIS RZECZY (ORYGINALNA TABELA) -->
+                <section id="spis-rzeczy-tabela" class="book-section book-surface border rounded-2xl p-6 sm:p-10 shadow-sm">
+                    <h2 class="font-serif text-2xl font-bold text-center mb-6">Spis Rzeczy (Wydanie Oryginalne)</h2>
+                    <div class="max-w-lg mx-auto divide-y border-theme text-sm sm:text-base">
+                        <a href="#rozdzial-1" class="flex justify-between py-2.5 px-3 hover:opacity-75 transition"><span>I. Harfa Boża</span><span class="accent-text font-mono">str. 11</span></a>
+                        <a href="#rozdzial-2" class="flex justify-between py-2.5 px-3 hover:opacity-75 transition"><span>II. Struna 1: Stworzenie</span><span class="accent-text font-mono">str. 27</span></a>
+                        <a href="#rozdzial-3" class="flex justify-between py-2.5 px-3 hover:opacity-75 transition"><span>III. Struna 2: Okazanie Sprawiedliwości</span><span class="accent-text font-mono">str. 35</span></a>
+                        <a href="#rozdzial-4" class="flex justify-between py-2.5 px-3 hover:opacity-75 transition"><span>IV. Struna 3: Obietnica Abrahamowa</span><span class="accent-text font-mono">str. 63</span></a>
+                        <a href="#rozdzial-5" class="flex justify-between py-2.5 px-3 hover:opacity-75 transition"><span>V. Struna 4: Narodzenie Jezusa</span><span class="accent-text font-mono">str. 73</span></a>
+                        <a href="#rozdzial-6" class="flex justify-between py-2.5 px-3 hover:opacity-75 transition"><span>VI. Struna 5: Okup</span><span class="accent-text font-mono">str. 115</span></a>
+                        <a href="#rozdzial-7" class="flex justify-between py-2.5 px-3 hover:opacity-75 transition"><span>VII. Struna 6: Zmartwychwstanie</span><span class="accent-text font-mono">str. 155</span></a>
+                        <a href="#rozdzial-8" class="flex justify-between py-2.5 px-3 hover:opacity-75 transition"><span>VIII. Struna 7: Objawiona Tajemnica</span><span class="accent-text font-mono">str. 187</span></a>
+                        <a href="#rozdzial-9" class="flex justify-between py-2.5 px-3 hover:opacity-75 transition"><span>IX. Struna 8: Powrót Naszego Pana</span><span class="accent-text font-mono">str. 219</span></a>
+                        <a href="#rozdzial-10-11" class="flex justify-between py-2.5 px-3 hover:opacity-75 transition"><span>X. Struna 9: Uwielbienie Kościoła</span><span class="accent-text font-mono">str. 289</span></a>
+                        <a href="#rozdzial-10-11" class="flex justify-between py-2.5 px-3 hover:opacity-75 transition"><span>XI. Struna 10: Przywrócenie (Restytucya)</span><span class="accent-text font-mono">str. 331</span></a>
+                    </div>
+                </section>
+
+                <!-- ROZDZIAŁ I -->
+                <article id="rozdzial-1" class="book-section book-surface border rounded-2xl p-6 sm:p-12 shadow-sm">
+                    <div class="text-center mb-8">
+                        <span class="text-xs uppercase tracking-widest accent-text font-bold">Rozdział I</span>
+                        <h2 class="font-serif text-2xl sm:text-3xl font-bold mt-1">Harfa Boża</h2>
+                    </div>
+
+                    <div class="reader-content">
+                        <div class="scripture-quote">
+                            „Nakłonię do przypowieści ucha mego, a wyłożę przy harfie zagadkę moję.” — Psalm 49:5.
+                        </div>
+
+                        <p><span class="para-num">¶ 1</span>HARFA jest instrumentem muzycznym wynalezionym od wielu wieków. Będąc dobrze nastrojoną, wydaje w rękach harfisty miłą melodyę, rozweselającą serce. Pierwszą wzmiankę w Biblii o harfie napotykamy w Księdze Rodzaju (1 Mojżeszowa 4:21). Nazwa jej wynalazcy była Jubal, przeto nazwano go „Ojcem wszystkich grających na harfie i na muzycznem narzędziu.”</p>
+
+                        <p><span class="para-num">¶ 2</span>Było to na 1812 lat przed przyjściem Jezusa w ciele, gdy Bóg zorganizował dwanaście pokoleń Izraela, potomków Jakóba, w naród, znany potem jako naród Izraelski. Był to jedyny naród, z którym Bóg zawarł przymierze i dlatego nie uznawał On innych narodów w ten sam sposób. (Amos 3:2) Naród Izraelski był użyty w zamiarze stworzenia żywych obrazów, czyli typów, przedstawiających przyszłe lepsze rzeczy. Ci, którzy badają biblijny opis Izraela, są w stanie trafnie wyciągać wnioski o wypadkach, które w niedalekiej przyszłości przyniosą dobro ludzkości. (1 List do Koryntów 10:1-13; Do Żydów 10:11)</p>
+
+                        <p><span class="para-num">¶ 3</span>W narodzie Izraelskim harfa była instrumentem przeznaczonym do użytku w chwilach radości i podniesienia uczuć. Dawid, który przez czterdzieści lat był królem Izraelskim, grał doskonale na harfie, i gdy się zauważy to w Psalmach, harfa często użyta jest do przedstawienia jakiejś wielkiej nauki lub prawdy. Żydzi używali tego instrumentu do okazania radości przy okazyach takich jak jubileusze i obchody świąt.</p>
+
+                        <p><span class="para-num">¶ 4</span>Józefus, żydowski historyk, twierdzi że harfa zazwyczaj miała dziesięć strun, lecz czasami robiono mniejsze harfy o ośmiu strunach. Liczba dziesięć użyta w Biblii wyobraża wszystko to, co jest całkowite lub doskonałe w odniesieniu do człowieka. Rozumiemy wobec tego, że harfa o dziesięciu strunach pięknie wyobraża wielkie zasadnicze prawdy względem Boskiego Planu. Harfa o ośmiu strunach może ilustrować czas, gdy dwa główne zarysy Boskiego Planu nie były znane ludziom. Bóg przyobiecał, że większe światło na Jego Słowo przyjdzie przy końcu wieku, czyli przy końcu świata, który oznacza społeczny porządek rzeczy.</p>
+
+                        <p><span class="para-num">¶ 5</span>Księga Objawienia pisana jest przeważnie w symbolach. W Objawieniu 14:2,3 i 15:2,3 znajdujemy krótki opis klasy chwalebnych istot, grających na harfach, a te nazwane są „harfy Boże.” Harfa jest użyta jako symbol wielkiej prawdy lub zarysu w Boskim programie.</p>
+
+                        <h3 class="font-serif text-xl font-bold mt-8 mb-4 accent-text">Kto to jest Bóg?</h3>
+
+                        <p><span class="para-num">¶ 6</span>Zanim możemy poznać Boga i zrozumieć Jego wielki plan, najpierw musimy uwierzyć, że On istnieje i nagradza tych, którzy Go szukają. (Do Żydów 11:6) Lecz jak możemy wierzyć? Musimy najpierw posiadać pewną znajomość. A skąd wiemy, że istnieje wszechmocny Bóg? Rozejrzyjmy się wokoło nas na pospolitsze rzeczy i rozumujmy z tego założenia.</p>
+
+                        <p><span class="para-num">¶ 7-8</span>Spójrzmy na kwiaty w naszym ogródku, na szerokie pola, niebotyczne góry, długie rzeki, a potem na olbrzymi ocean. A teraz zwróćmy oczy nasze na bezkreślne przestworza nieba i zliczmy, jeśli możemy, wszystkie gwiazdy i planety, spokojnie przesuwające się po firmamencie. Gdy król Dawid spoglądał na te cuda stworzenia, był tak zachwycony wielkością Boga, że napisał: „Niebiosa opowiadają chwałę Bożą, a dzieło rąk jego rozpostarcie oznajmuje. Dzień dniowi podaje słowo, a noc nocy pokazuje umiejętność.” — Psalm 19:2-5.</p>
+
+                        <p><span class="para-num">¶ 9-11</span>Zastanówmy się nad człowiekiem, co za wspaniałym mechanizmem jest jego ciało! Musimy przyznać, że była Pierwsza Przyczyna, która puściła w ruch wszystkie widzialne, jakoteż i niewidzialne rzeczy w wszechświecie. Kto jest tą Pierwszą Przyczyną? Jehowa mu na imię — wielki i wszechmocny Bóg wszechświata. (Psalm 83:17; 1 Mojżeszowa 17:1) Imię Jehowa oznacza sam przez się egzystujący. Był On bez początku i jest bez końca. Cztery wielkie i nieskończone przymioty Jehowy są: sprawiedliwość, moc, miłość i mądrość. (Ezechiel 1:5,6) Przymioty te działają zawsze w harmonii z sobą; a we właściwych czasach i chwilach objawia On je.</p>
+
+                        <h3 class="font-serif text-xl font-bold mt-8 mb-4 accent-text">Jego Objawienie</h3>
+
+                        <p><span class="para-num">¶ 12-14</span>Wszyscy zgadzają się z tem, że człowiek jest najwyższą istotą na ziemi. Wszechmocny objawił człowiekowi ze swego planu i zamiarów w Jego wspaniałej księdze — Biblii Świętej. Stary Testament napisali święci mężowie Starożytności, pędzeni duchem czyli niewidzialną mocą Jehowy. (2 Piotra 1:21) Duch Święty oznacza niewidzialną moc lub wpływ Jehowy — Święty dlatego, że On jest Świętym. Jest aż dwudziestu czterech proroczych pisarzy Starego Testamentu, którzy przepowiedzieli wielkie wypadki, jakie miały mieć miejsce na ziemi.</p>
+
+                        <p><span class="para-num">¶ 15-18</span>Historya pisana jest zarekordowanym spisem faktów i wydarzeń w porządku chronologicznym. Proroctwo, które jest prawdziwe, zawiera wykaz faktów i wydarzeń przepowiedzianych na czas przyszły. Innemi słowy, proroctwo jest to historya pisana na przyszłość. Za ilustracyę tego niech nam posłuży następujący przykład: Telegraf bez drutu i latawce są nowoczesnymi wynalazkami. Jednak kilkanaście stuleci temu Bóg przez proroków przepowiedział o nich. (Ijob 38:35; Izajasz 60:8) Pociągi są w użyciu od niespełna stu lat, a jednak prorok Boży wyraźnie opisał pociąg i sposób operowania nim w czasie końca. (Nahum 2:3-6; Daniel 12:4)</p>
+
+                        <p><span class="para-num">¶ 19-24</span>Przez swych Świętych proroków Bóg przepowiedział, że w przyszłości powstanie wielki człowiek na świecie; że będzie Żydem (5 Mojżeszowa 18:15), urodzi się w Betleem (Micheasz 5:2), wydany będzie za trzydzieści srebrników (Zacharyasz 11:12), umrze gwałtowną śmiercią, a jednak ani kość w ciele Jego nie będzie złamana (Psalm 34:20) i powstanie z martwych (Psalm 16:10). Prorocy nie rozumieli, co pisali (1 Piotra 1:10-12). Pierwszy zrozumiał Boski plan Jezus, który przed przyjściem na świat znany był jako Logos, czyli ustne narzędzie i wykonawca woli Jehowy (Objawienie 5 rozdział).</p>
+
+                        <p><span class="para-num">¶ 25-27</span>Harfy użyto do przedstawienia wspaniałości i piękna, absolutnej harmonii i majestatycznej słodyczy Boskich postanowień, czyli planu. Imię Dawid oznacza umiłowany. Dawid doskonale grywał na harfie o dziesięciu strunach. Owych dziesięć strun harfy trafnie reprezentuje dziesięć zasadniczych doktryn, czyli prawdziwych nauk Boskiego Planu:</p>
+
+                        <div class="my-6 p-5 rounded-xl border border-theme accent-soft-bg font-sans text-sm sm:text-base">
+                            <ol class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 font-semibold">
+                                <li><span class="accent-text mr-1.5">(1)</span> STWORZENIE</li>
+                                <li><span class="accent-text mr-1.5">(2)</span> OKAZANIE SPRAWIEDLIWOŚCI</li>
+                                <li><span class="accent-text mr-1.5">(3)</span> OBIETNICA ABRAHAMOWA</li>
+                                <li><span class="accent-text mr-1.5">(4)</span> NARODZENIE JEZUSA</li>
+                                <li><span class="accent-text mr-1.5">(5)</span> OKUP</li>
+                                <li><span class="accent-text mr-1.5">(6)</span> ZMARTWYCHWSTANIE</li>
+                                <li><span class="accent-text mr-1.5">(7)</span> OBJAWIONA TAJEMNICA</li>
+                                <li><span class="accent-text mr-1.5">(8)</span> OBECNOŚĆ PANA</li>
+                                <li><span class="accent-text mr-1.5">(9)</span> UWIELBIENIE</li>
+                                <li><span class="accent-text mr-1.5">(10)</span> PRZYWRÓCENIE, CZYLI RESTYTUCYA</li>
+                            </ol>
+                        </div>
+
+                        <!-- Pytania do rozdziału I -->
+                        <details class="chapter-questions mt-8 border border-theme rounded-xl overflow-hidden">
+                            <summary class="cursor-pointer px-5 py-3.5 font-sans font-semibold text-sm flex items-center justify-between accent-soft-bg accent-text select-none">
+                                <span>Pytania do Rozdziału I (z odnośnikami do paragrafów)</span>
+                                <span class="text-xs">Kliknij, aby rozwinąć / zwinąć</span>
+                            </summary>
+                            <div class="p-5 font-sans text-sm space-y-2 muted-text">
+                                <ul class="list-disc pl-5 space-y-1.5">
+                                    <li>Co to jest harfa i kiedy ją wynaleziono? Kto był jej wynalazcą? <strong>¶ 1</strong></li>
+                                    <li>Kiedy Bóg zorganizował dwanaście pokoleń Izraela w jeden naród i w jakim celu? <strong>¶ 2</strong></li>
+                                    <li>Ile strun miała żydowska harfa i co one reprezentują? <strong>¶ 4</strong></li>
+                                    <li>Wymień dowody istnienia Najwyższej Istoty oraz cztery podstawowe przymioty Boskie. <strong>¶ 7–10</strong></li>
+                                    <li>Przez kogo była napisana Biblia i co oznacza Duch Święty? <strong>¶ 13, 14</strong></li>
+                                    <li>Co to jest historya, a co to jest proroctwo? <strong>¶ 15, 16</strong></li>
+                                    <li>Kto był pierwszym, który zrozumiał Boski Plan? Jak nazywał się zanim stał się człowiekiem? <strong>¶ 22</strong></li>
+                                    <li>Wymień dziesięć zasadniczych prawd wyobrażonych przez struny harfy Bożej. <strong>¶ 26</strong></li>
+                                </ul>
+                            </div>
+                        </details>
+                    </div>
+                </article>
+
+                <!-- ROZDZIAŁ II -->
+                <article id="rozdzial-2" class="book-section book-surface border rounded-2xl p-6 sm:p-12 shadow-sm">
+                    <div class="text-center mb-8">
+                        <span class="text-xs uppercase tracking-widest accent-text font-bold">Rozdział II • Struna 1</span>
+                        <h2 class="font-serif text-2xl sm:text-3xl font-bold mt-1">Stworzenie</h2>
+                    </div>
+
+                    <div class="reader-content">
+                        <p><span class="para-num">¶ 28</span>PRZEDMIOT stworzenia, tu rozpatrywany, głównie dotyczy ziemi i stworzeń ziemskich, z których największem jest człowiek. Pierwszem stworzeniem Bożem był Logos, wyraz przetłumaczony w naszych Bibliach na „Słowo”, jak czytamy: „Na początku było Słowo, a ono Słowo było u Boga, a Bogiem było ono Słowo.” (Jan 1:1) Bóg jest to tytuł Jehowy, Wszechmocnego. Logos — Słowo był bogiem, czyli władcą. „Wszystkie rzeczy przez nie się stały, a bez niego nic się nie stało.” Był On wykonawcą Jehowy i przez niego wszystkie rzeczy zostały stworzone.</p>
+
+                        <p><span class="para-num">¶ 29</span>Ziemię Bóg ukształtował na całe wieki przed stworzeniem człowieka, a stworzył ją tylko dla uposażenia człowieka. O tym prorok Boży tak pisze: „Jam uczynił ziemię, i człowiekam na niej stworzył. Bo tak mówi Pan, który utworzył ziemię, i uczynił ją, który ją utwierdził, nie na próżno stworzył ją, na mieszkanie utworzył ją.” — Izajasz 45:12,18.</p>
+
+                        <p><span class="para-num">¶ 30-31</span>Bóg najpierw stworzył mężczyznę i kobietę z pierwiastków znajdujących się w ziemi i obdarzył tę pierwszą parę zdolnością rozmnażania się. Pierwszy mężczyzna nazwany był Adamem, pierwsza kobieta, Ewą. „Stworzył tedy Pan Bóg człowieka z prochu ziemi, i natchnął w oblicze jego dech żywota. I stał się człowiek duszą żyjącą.” (1 Mojżeszowa 2:7) Bóg nie dał człowiekowi duszy osobnej od ciała. Wyraz dusza oznacza istotę żyjącą i oddychającą. Każdy człowiek jest duszą. Żaden człowiek nie posiada duszy. Każda żyjąca istota jest duszą.</p>
+
+                        <p><span class="para-num">¶ 32-34</span>Jehowa następnie uczynił wspaniałe mieszkanie dla człowieka, które nazwał w Biblii Edenem. Był to prześliczny ogród lub park. Następnie Bóg dał człowiekowi prawo, którem by się rządził: „Z każdego drzewa sadu jeść będziesz. Ale z drzewa wiadomości dobrego i złego jeść z niego nie będziesz, albowiem dnia, którego jeść będziesz z niego, śmiercią umrzesz.” (1 Mojżeszowa 2:16,17) Gdyby Adam i Ewa okazali się zawsze posłusznymi Jehowie, nie byłoby cierpień, chorób lub śmierci w rodzaju ludzkim.</p>
+
+                        <p><span class="para-num">¶ 35-38</span>W Piśmie Świętem Logos, to jest Jezus, nazwany jest „jasną gwiazdą poranną.” (Objawienie 22:16) Nieraz słyszy się pytanie: kto stworzył dyabła, Szatana, czyli onego złego? Właściwą odpowiedzią jest: Istota ta nie zawsze była Szatanem. Pierwotnie była doskonałą i piękną, jak gwiazda niebieska. Jej pierwsza nazwa była Lucyfer. Prorok Ezechiel mówi o nim: „Byłeś doskonały na drogach twoich ode dnia tego, któregoś jest stworzony, aż się znalazła nieprawość w tobie.” (Ezechiel 28:14,15) Gdy Bóg stwarzał ziemię, te dwie gwiazdy niebieskie śpiewały społem radosną pieśń, a anielscy synowie Boży wykrzykiwali z radości (Ijob 38:4-7). Stworzenie jest pierwszą częścią Boskiego planu i właściwie może być nazwane pierwszą struną harfy Bożej.</p>
+
+                        <details class="chapter-questions mt-8 border border-theme rounded-xl overflow-hidden">
+                            <summary class="cursor-pointer px-5 py-3.5 font-sans font-semibold text-sm flex items-center justify-between accent-soft-bg accent-text select-none">
+                                <span>Pytania do Rozdziału II (Struna 1)</span>
+                                <span class="text-xs">Kliknij, aby rozwinąć / zwinąć</span>
+                            </summary>
+                            <div class="p-5 font-sans text-sm space-y-2 muted-text">
+                                <ul class="list-disc pl-5 space-y-1.5">
+                                    <li>Kto w Biblii nazwany jest początkiem stworzenia Bożego? <strong>¶ 28</strong></li>
+                                    <li>W jakim celu Bóg stworzył ziemię? <strong>¶ 29</strong></li>
+                                    <li>W jaki sposób Bóg stworzył człowieka i co to jest dusza? <strong>¶ 31</strong></li>
+                                    <li>Jakie prawo Bóg dał człowiekowi podczas pobytu w Edenie? <strong>¶ 33</strong></li>
+                                    <li>Kim jest dyabeł, czyli Szatan, i jak pierwotnie się nazywał? <strong>¶ 36</strong></li>
+                                    <li>Co stanowi pierwszą strunę harfy Bożej? <strong>¶ 38</strong></li>
+                                </ul>
+                            </div>
+                        </details>
+                    </div>
+                </article>
+
+                <!-- ROZDZIAŁ III -->
+                <article id="rozdzial-3" class="book-section book-surface border rounded-2xl p-6 sm:p-12 shadow-sm">
+                    <div class="text-center mb-8">
+                        <span class="text-xs uppercase tracking-widest accent-text font-bold">Rozdział III • Struna 2</span>
+                        <h2 class="font-serif text-2xl sm:text-3xl font-bold mt-1">Okazanie Sprawiedliwości</h2>
+                    </div>
+
+                    <div class="reader-content">
+                        <p><span class="para-num">¶ 39-40</span>JEDNYM z przymiotów Bożych jest sprawiedliwość. „Sprawiedliwość i sąd są gruntem stolicy twojej.” (Psalm 89:15) Prawo Boże nie zmienia się. Za złamanie prawa Jehowy następuje kara — wymiar sprawiedliwości. Okazanie sprawiedliwości jest drugą struną harfy Bożej.</p>
+
+                        <p><span class="para-num">¶ 41-45</span>Bóg obdarzył człowieka wolną wolą. Lucyfer, obserwując Adama i Ewę w ogrodzie Eden, powziął niewłaściwą ambicyę, by stać się podobnym Najwyższemu (Izajasz 14:12-15). Od czasu wypędzenia za swe przestępstwo znany jest jako smok (pożeracz), wąż (zwodziciel), dyabeł (oszczerca) i Szatan (przeciwnik) (Objawienie 12:9). Skusił Ewę kłamstwem: „Żadnym sposobem śmiercią nie pomrzecie.” Adam dobrowolnie zjadł owoc, woląc umrzeć razem ze swą towarzyszką. (1 Tymoteusza 2:14)</p>
+
+                        <p><span class="para-num">¶ 46-52</span>Tedy Jehowa wydał wyrok: „W pocie oblicza twego będziesz pożywał chleba, aż się nawrócisz do ziemi, gdyżeś z niej wzięty; boś proch i w proch się obrócisz.” (1 Mojżeszowa 3:19) Tak doskonały człowiek postradał swe życie. Przez 930 lat borykał się Adam poza rajem i umarł. Możemy całkiem stosownie mówić o wymiarze sprawiedliwości jako o żałosnym akordzie harfy Bożej, bez którego tony harfy nie byłyby zupełne.</p>
+
+                        <h3 class="font-serif text-xl font-bold mt-8 mb-4 accent-text">Dusze ludzkie i stan umarłych</h3>
+
+                        <p><span class="para-num">¶ 53-61</span>Nieśmiertelnym jest ten, który nigdy nie umiera. Gdy się odłączy dech żywota od ciała (jak parę z lokomotywy), dusza przestaje istnieć. „Dusza, która grzeszy umrze.” (Ezechiel 18:4) Myśl, że dusza jest nieśmiertelną pierwszy podał Szatan. Pismo Św. poucza, że własność nieśmiertelności pierwotnie posiadał tylko Jehowa (1 Tymoteusza 6:16), a obdarzeni nią zostaną wierni Chrześcianie jako nagrodą (1 Koryntów 15:53).</p>
+
+                        <p><span class="para-num">¶ 62-69</span>Umarli są nieprzytomni — nic nie wiedzą o sobie: „Boć ci co żyją wiedzą, że umrzeć mają, ale umarli o niczem nie wiedzą.” (Kaz. Salomonowy 9:5,6) Śmierć nazwana jest w Biblii snem (1 Królewska 2:10; 1 Tesalonicensów 4:13,14), ponieważ Bóg zamierzył we właściwym czasie wzbudzić wszystkich umarłych.</p>
+
+                        <h3 class="font-serif text-xl font-bold mt-8 mb-4 accent-text">Czy Bóg męczy kogokolwiek?</h3>
+
+                        <p><span class="para-num">¶ 70-82</span>Nauka o wiecznych mękach w piekle gorejącem siarką nie jest prawdziwą dla czterech powodów: (1) ponieważ jest nierozsądną; (2) ponieważ sprzeciwia się sprawiedliwości; (3) ponieważ sprzeczną jest zasadzie miłości; i (4) ponieważ jest całkiem niebiblijną. „Zapłatą za grzech jest śmierć” (Rzymian 6:23) — wieczna śmierć, zniszczenie (2 Tesalonicensów 1:9), a nie wieczne męki.</p>
+
+                        <p><span class="para-num">¶ 83-91</span>Wyraz „piekło” jest przetłumaczony z hebrajskiego <em>sheol</em> oraz greckiego <em>hades</em> i oznacza grób, czyli stan śmierci i nieświadomości (Ijob 14:13; 1 Mojżeszowa 37:35; Psalm 16:10). Doktryna o mękach pochodzi z pogańskiego kultu Baala i Molocha w dolinie Hinnom, który Jehowa potępił jako obrzydliwość (Jeremiasz 19:5; 32:35).</p>
+
+                        <details class="chapter-questions mt-8 border border-theme rounded-xl overflow-hidden">
+                            <summary class="cursor-pointer px-5 py-3.5 font-sans font-semibold text-sm flex items-center justify-between accent-soft-bg accent-text select-none">
+                                <span>Pytania do Rozdziału III (Struna 2)</span>
+                                <span class="text-xs">Kliknij, aby rozwinąć / zwinąć</span>
+                            </summary>
+                            <div class="p-5 font-sans text-sm space-y-2 muted-text">
+                                <ul class="list-disc pl-5 space-y-1.5">
+                                    <li>Jaka była przyczyna upadku Lucyfera i co oznaczają cztery jego nazwy? <strong>¶ 42, 43</strong></li>
+                                    <li>Jakie są szczegóły wyroku wydanego przez Jehowę na Adama i Ewę? <strong>¶ 46</strong></li>
+                                    <li>Kto dał początek pojęciu, że dusza jest nieśmiertelną, i komu naprawdę ją obiecano? <strong>¶ 60, 61</strong></li>
+                                    <li>Podaj cztery powody, dlaczego nauka o wiecznych mękach nie może być prawdziwą. <strong>¶ 70</strong></li>
+                                    <li>Co oznaczają wyrazy hebrajski <em>sheol</em> i grecki <em>hades</em>? <strong>¶ 84</strong></li>
+                                </ul>
+                            </div>
+                        </details>
+                    </div>
+                </article>
+
+                <!-- ROZDZIAŁ IV -->
+                <article id="rozdzial-4" class="book-section book-surface border rounded-2xl p-6 sm:p-12 shadow-sm">
+                    <div class="text-center mb-8">
+                        <span class="text-xs uppercase tracking-widest accent-text font-bold">Rozdział IV • Struna 3</span>
+                        <h2 class="font-serif text-2xl sm:text-3xl font-bold mt-1">Obietnica Abrahamowa</h2>
+                    </div>
+
+                    <div class="reader-content">
+                        <p><span class="para-num">¶ 92-95</span>Szesnaście stuleci upłynęło od wydania wyroku w Edenie, gdy wody potopu zatopiły niezbożny świat, ocalając jedynie Noego i jego rodzinę w korabiu (1 Mojżeszowa 7:21-23). Po potopie narody znów się rozmnożyły. Między wiernymi był Abram, nazwany później Abrahamem, przyjacielem Bożym. Gdy Abraham liczył 75 lat, Jehowa rzekł mu: „Wynijdź z ziemi twej... do ziemi, którąć pokażę. A uczynię cię w naród wielki... i błogosławione będą w tobie wszystkie narody ziemi.” (1 Mojżeszowa 12:1-3)</p>
+
+                        <p><span class="para-num">¶ 96-99</span>We właściwym czasie Abrahamowi i Sarze urodził się syn Izaak. Gdy Izaak podrósł, Bóg wystawił Abrahama na próbę na górze Moryja w Jeruzalem, rozkazując ofiarować syna (1 Mojżeszowa 22:2). Gdy Abraham podniósł rękę, Anioł Pański powstrzymał go, wskazując barana w gęstwinie, i potwierdził przysięgą: „I błogosławione będą w nasieniu twojem wszystkie narody ziemi, dlatego, żeś usłuchał głosu mego.” (1 Mojżeszowa 22:15-18) W tym wspaniałym obrazie Abraham był typem na Jehowę, a Izaak typem na Jezusa, umiłowanego Syna Bożego.</p>
+
+                        <p><span class="para-num">¶ 100-101</span>Przymierze Jehowy z Abrahamem nie zawierało żadnych warunków ani ograniczeń — było przymierzem jednostronnym, opartym na dwóch niezmiennych rzeczach: słowie i przysiędze Boga (Do Żydów 6:18). Oznacza ono, że każdy człowiek we właściwym czasie otrzyma znajomość i sposobność ubiegania się o żywot wieczny.</p>
+
+                        <!-- Wiersz -->
+                        <div class="poem-box font-serif">
+                            <h4 class="font-bold text-base uppercase tracking-wider accent-text mb-4">Nadchodzi Promienna Godzina</h4>
+                            <div class="space-y-4 text-sm sm:text-base italic leading-relaxed">
+                                <p>Choć ponad ziemią wciąż się ucisk sroży,<br>Dzień Pańskiej pomsty chociaż gnębi lud,<br>Wkrótce zaświta nam poranek Boży,<br>Powstanie ziemia w Tysiąclecia cud.</p>
+                                <p>Powstanie ziemia, Pan rany zagoi,<br>Ta sama ręka, która ją chłostała,<br>Uzdrowi wszystkich, wszystko uspokoi,<br>I znów zakwitnie rajem ziemia cała.</p>
+                                <p>Oto nadchodzi promienna godzina,<br>Król Nowy rządy zaczyna na świecie,<br>Wnet świat usłyszy głos Bożego Syna,<br>Bo już na ziemi wschodzi Tysiąclecie.</p>
+                            </div>
+                        </div>
+
+                        <details class="chapter-questions mt-8 border border-theme rounded-xl overflow-hidden">
+                            <summary class="cursor-pointer px-5 py-3.5 font-sans font-semibold text-sm flex items-center justify-between accent-soft-bg accent-text select-none">
+                                <span>Pytania do Rozdziału IV (Struna 3)</span>
+                                <span class="text-xs">Kliknij, aby rozwinąć / zwinąć</span>
+                            </summary>
+                            <div class="p-5 font-sans text-sm space-y-2 muted-text">
+                                <ul class="list-disc pl-5 space-y-1.5">
+                                    <li>Ilu uszło śmierci w potopie i kim był Abraham? <strong>¶ 93, 94</strong></li>
+                                    <li>Na jaką próbę względem Izaaka wystawił Bóg Abrahama i kogo oni wyobrażali? <strong>¶ 96–99</strong></li>
+                                    <li>Dlaczego przymierze Boga z Abrahamem było przymierzem jednostronnem? <strong>¶ 100, 101</strong></li>
+                                </ul>
+                            </div>
+                        </details>
+                    </div>
+                </article>
+
+                <!-- ROZDZIAŁ V -->
+                <article id="rozdzial-5" class="book-section book-surface border rounded-2xl p-6 sm:p-12 shadow-sm">
+                    <div class="text-center mb-8">
+                        <span class="text-xs uppercase tracking-widest accent-text font-bold">Rozdział V • Struna 4</span>
+                        <h2 class="font-serif text-2xl sm:text-3xl font-bold mt-1">Narodzenie Jezusa</h2>
+                    </div>
+
+                    <div class="reader-content">
+                        <p><span class="para-num">¶ 102-104</span>Apostoł Paweł tłumaczy, że żony Abrahama przedstawiają przymierza (Galatów 4:22-28): Sara wyobraża przymierze Abrahamowe (rodzące Izaaka — całego Chrystusa, Głowę i Ciało), Agar — przymierze Zakonu z góry Synaj, zaś Ketura — Nowe Przymierze, przez które błogosławiona będzie ludzkość.</p>
+
+                        <p><span class="para-num">¶ 105-121</span>Obietnica została przekazana Izaakowi, a następnie Jakóbowi (Izraelowi), któremu Ezaw sprzedał swe pierworodztwo za miskę soczewicy (1 Mojżeszowa 25:27-34). Przed śmiercią w Egipcie Jakób błogosławił Judę: „Nie będzie odjęte sceptrum od Judy... aż przyjdzie Szyło.” (1 Mojżeszowa 49:10) Później Mojżesz wyprowadził Izraelitów z Egiptu, zapowiadając przyjście wielkiego Proroka (5 Mojżeszowa 18:15).</p>
+
+                        <p><span class="para-num">¶ 122-131</span>Obietnica królewska została dana domowi Dawida. Gdy linia Salomona została odrzucona na Sedekiaszu (Ezechiel 21:25-27), Bóg wyprowadził Zbawiciela z linii innego syna Dawidowego — Nataniela, z którego pochodziła Marya, matka Jezusa (Ew. Łukasza 1:30-35).</p>
+
+                        <p><span class="para-num">¶ 132-145</span>Na mocy dekretu cesarza Augusta Józef i Marya udali się z Nazaretu do Betleem, gdzie wśród nocnej ciszy, bez bólu, narodził się Jezus — około dnia 1-go października (nie zaś 25 grudnia, gdy pasterze nie nocują na polach). Zastępy anielskie ogłosiły pasterzom: „Chwała na wysokościach Bogu, a na ziemi pokój, w ludziach dobre upodobanie.” — Ew. Łukasza 2:14.</p>
+
+                        <p><span class="para-num">¶ 146-159</span>Trzej „mędrcy” czyli magowie ze Wschodu (wyznawcy astrologii) nie byli posłani przez Boga, lecz kierowani światłem użytym przez Szatana w spisku na życie dzieciątka. Udali się oni wprost do Heroda, co doprowadziło do rzezi niewiniątek w Betleem. Bóg jednak ostrzegł magów we śnie, a Józefowi nakazał ucieczkę do Egiptu (Ew. Mateusza 2:1-16).</p>
+
+                        <p><span class="para-num">¶ 160-176</span>Jezus narodził się czystym i bez grzechu, ponieważ Ojcem Jego był Jehowa (Ew. Łukasza 1:35). W przedludzkiem istnieniu był Logosem, lecz życie Jego zostało przeniesione na ludzki poziom (Ew. Jana 1:14; Do Filipensów 2:6,7). Nie był On wcielonym duchem ani pół-Bogiem i pół-człowiekiem, lecz doskonałym człowiekiem („na małą chwilę mniejszym stał się od aniołów” — Do Żydów 2:9), równym doskonałemu Adamowi.</p>
+
+                        <details class="chapter-questions mt-8 border border-theme rounded-xl overflow-hidden">
+                            <summary class="cursor-pointer px-5 py-3.5 font-sans font-semibold text-sm flex items-center justify-between accent-soft-bg accent-text select-none">
+                                <span>Pytania do Rozdziału V (Struna 4)</span>
+                                <span class="text-xs">Kliknij, aby rozwinąć / zwinąć</span>
+                            </summary>
+                            <div class="p-5 font-sans text-sm space-y-2 muted-text">
+                                <ul class="list-disc pl-5 space-y-1.5">
+                                    <li>Co wyobrażały Sara, Agar oraz Ketura według Apostoła Pawła? <strong>¶ 102, 103</strong></li>
+                                    <li>Z którego syna Dawida pochodziła Marya, matka Jezusa? <strong>¶ 128</strong></li>
+                                    <li>Jaka jest prawdziwa data urodzenia Jezusa i dlaczego? <strong>¶ 145</strong></li>
+                                    <li>Kto posłał trzech „mędrców” do Heroda i w jakim celu? <strong>¶ 146–154</strong></li>
+                                    <li>Dlaczego Jezus musiał być doskonałym człowiekiem, a nie istotą wcieloną? <strong>¶ 170–176</strong></li>
+                                </ul>
+                            </div>
+                        </details>
+                    </div>
+                </article>
+
+                <!-- ROZDZIAŁ VI -->
+                <article id="rozdzial-6" class="book-section book-surface border rounded-2xl p-6 sm:p-12 shadow-sm">
+                    <div class="text-center mb-8">
+                        <span class="text-xs uppercase tracking-widest accent-text font-bold">Rozdział VI • Struna 5</span>
+                        <h2 class="font-serif text-2xl sm:text-3xl font-bold mt-1">Okup</h2>
+                    </div>
+
+                    <div class="reader-content">
+                        <p><span class="para-num">¶ 177-184</span>WIELKA ofiara okupu jest dla człowieka najgłówniejszą struną harfy Bożej — osią, wokoło której cały plan się obraca. Adam, grzesząc, utracił życie oraz prawo do życia, a jego potomkowie narodzili się bez prawa do życia (Do Rzymian 5:12).</p>
+
+                        <p><span class="para-num">¶ 185-202</span>Bóg przedstawiał okup w figurach: w baranku wielkanocnym w Egipcie (2 Mojżeszowa 12) oraz w Dniu Pojednania w Przybytku na puszczy (3 Mojżeszowa 16), gdzie najwyższy kapłan zabijał cielca na dziedzińcu i wnosił jego krew do Miejsca Najświętszego. Wyraz „okup” oznacza ściśle równoważną cenę: „życie za życie” (5 Mojżeszowa 19:21; Izajasz 53).</p>
+
+                        <p><span class="para-num">¶ 203-217</span>Żaden potomek Adama nie mógł odkupić brata swego (Psalm 49:8), gdyż wszyscy byli niedoskonali i żaden nie miał dostępu do nieba. Dlatego Bóg posłał Swego Syna Jezusa, który w wieku trzydziestu lat ochrzcił się w Jordanie, stając się doskonałym Odkupicielem, „który dał samego siebie na okup za wszystkich.” — 1 Tymoteusza 2:5,6.</p>
+
+                        <p><span class="para-num">¶ 218-244</span>Przez trzy i pół roku Jezus służył ludziom, aż niesprawiedliwie osądzony przez Sanhedryn i wydany przez Piłata, umarł na krzyżu na Kalwaryi, przygotowując cenę okupu. Jak w ilustracyi o bracie Karolu, który zarabia sto dolarów, aby wykupić z więzienia swego brata Jana, tak Jezus zamienił Swe doskonałe człowieczeństwo na zasługę okupu, którą po zmartwychwstaniu przedstawił przed obliczem Boga w niebie (Do Żydów 9:24).</p>
+
+                        <div class="poem-box font-serif">
+                            <h4 class="font-bold text-base uppercase tracking-wider accent-text mb-4">Miłość Boża</h4>
+                            <div class="space-y-4 text-sm sm:text-base italic leading-relaxed">
+                                <p>Czem ziemski człowiek jest, że o nim Bóg pamięta,<br>Czem syn Człowieczy jest, że Pańska ręka święta<br>Tak nawiedziła Go?<br>Od Swych aniołów mniejszym uczynił Pan Syna<br>Na małą chwilę tylko, lecz przyszła godzina,<br>Że dał Mu chwałę Swą.</p>
+                                <p>„Czem się odpłacę za Twą krew?<br>Za łaski Twojej zdrój?<br>Racz przyjąć ten dziękczynny śpiew<br>Najdroższy Zbawco mój.”</p>
+                            </div>
+                        </div>
+
+                        <details class="chapter-questions mt-8 border border-theme rounded-xl overflow-hidden">
+                            <summary class="cursor-pointer px-5 py-3.5 font-sans font-semibold text-sm flex items-center justify-between accent-soft-bg accent-text select-none">
+                                <span>Pytania do Rozdziału VI (Struna 5)</span>
+                                <span class="text-xs">Kliknij, aby rozwinąć / zwinąć</span>
+                            </summary>
+                            <div class="p-5 font-sans text-sm space-y-2 muted-text">
+                                <ul class="list-disc pl-5 space-y-1.5">
+                                    <li>Jaka jest różnica między życiem a prawem do życia? <strong>¶ 179, 182</strong></li>
+                                    <li>Co przedstawiał cielec zabijany przez najwyższego kapłana w Dniu Pojednania? <strong>¶ 194, 199</strong></li>
+                                    <li>Jakie są dwa powody uniemożliwiające dzieciom Adama złożenie okupu za braci? <strong>¶ 208</strong></li>
+                                    <li>Wyjaśnij ilustracyę o Janie i Karolu w odniesieniu do okupu. <strong>¶ 239–242</strong></li>
+                                </ul>
+                            </div>
+                        </details>
+                    </div>
+                </article>
+
+                <!-- ROZDZIAŁ VII -->
+                <article id="rozdzial-7" class="book-section book-surface border rounded-2xl p-6 sm:p-12 shadow-sm">
+                    <div class="text-center mb-8">
+                        <span class="text-xs uppercase tracking-widest accent-text font-bold">Rozdział VII • Struna 6</span>
+                        <h2 class="font-serif text-2xl sm:text-3xl font-bold mt-1">Zmartwychwstanie</h2>
+                    </div>
+
+                    <div class="reader-content">
+                        <p><span class="para-num">¶ 245-258</span>Dnia czternastego miesiąca Nisan, R. P. 33, Jezus znajdował się w grobie, a Jego uczniowie byli przygnębieni, gdyż „jeszcze nie zrozumieli Pisma, iż miał zmartwychwstać” (Ew. Jana 20:9), choć przepowiadały to proroctwa (Ijob 19:25; Psalm 16:10; Izajasz 53:10). W niedzielę o świcie anioł Pański odwalił kamień i ogłosił niewiastom: „Niemaszci go tu; albowiem powstał, jako powiedział.” — Ew. Mateusza 28:6.</p>
+
+                        <p><span class="para-num">¶ 259-274</span>Fakt zmartwychwstania potwierdziło przeszło pięciuset świadków (1 Koryntów 15:3-8), którzy odważnie głosili tę prawdę mimo prześladowań i przekupstwa straży rzymskiej przez kapłanów (Ew. Mateusza 28:11-15).</p>
+
+                        <p><span class="para-num">¶ 275-297</span>Jezus został uśmiercony w ciele, a wzbudzony jako istota Boskiej natury, posiadająca żywot w samym sobie (1 Piotra 3:18; Ew. Jana 5:26). Po zmartwychwstaniu ukazał się uczniom jedenaście razy w różnych specjalnie stworzonych na te okazje ciałach (np. jako ogrodnik lub wędrowiec do Emaus), ponieważ nikt z ludzi nie mógłby spojrzeć na Jego chwalebne ciało duchowe i ostać się przy życiu (1 Tymoteusza 6:16). Zmartwychwstanie Jezusa jest gwarancyą, że wszyscy umarli usłyszą Jego głos i powstaną z grobów (Ew. Jana 5:28,29; Dzieje Apostolskie 17:31).</p>
+
+                        <details class="chapter-questions mt-8 border border-theme rounded-xl overflow-hidden">
+                            <summary class="cursor-pointer px-5 py-3.5 font-sans font-semibold text-sm flex items-center justify-between accent-soft-bg accent-text select-none">
+                                <span>Pytania do Rozdziału VII (Struna 6)</span>
+                                <span class="text-xs">Kliknij, aby rozwinąć / zwinąć</span>
+                            </summary>
+                            <div class="p-5 font-sans text-sm space-y-2 muted-text">
+                                <ul class="list-disc pl-5 space-y-1.5">
+                                    <li>Podaj teksty ze Starego Testamentu przepowiadające zmartwychwstanie Jezusa. <strong>¶ 247–250</strong></li>
+                                    <li>Ilu świadków widziało zmartwychwstałego Pana? <strong>¶ 271, 273</strong></li>
+                                    <li>Do jakiej natury Jezus został wzbudzony i dlaczego ukazywał się uczniom w różnych ciałach? <strong>¶ 275, 290–292</strong></li>
+                                    <li>Co zmartwychwstanie Chrystusa gwarantuje całej ludzkości? <strong>¶ 296, 297</strong></li>
+                                </ul>
+                            </div>
+                        </details>
+                    </div>
+                </article>
+
+                <!-- ROZDZIAŁ VIII -->
+                <article id="rozdzial-8" class="book-section book-surface border rounded-2xl p-6 sm:p-12 shadow-sm">
+                    <div class="text-center mb-8">
+                        <span class="text-xs uppercase tracking-widest accent-text font-bold">Rozdział VIII • Struna 7</span>
+                        <h2 class="font-serif text-2xl sm:text-3xl font-bold mt-1">Objawiona Tajemnica</h2>
+                    </div>
+
+                    <div class="reader-content">
+                        <p><span class="para-num">¶ 298-312</span>TAJEMNICA to utrzymywanie czegoś w ścisłym sekrecie aż do stosownego czasu. Dopiero w dzień Zielonych Świąt, gdy na uczniów zstąpił duch święty (Dzieje Apostolskie 2:1-4), zaczęli oni rozumieć tajemnicę zakrytą od wieków: „która (tajemnica) jest Chrystus między wami, nadzieja ona chwały.” — Do Kolosensów 1:26,27.</p>
+
+                        <p><span class="para-num">¶ 313-323</span>Chrystus składa się z Jezusa jako potężnej Głowy oraz ze 144,000 członków Jego ciała — Kościoła (Do Kolosensów 1:18; Objawienie 7:4). Klasa ta stanowi nasienie Abrahamowe według obietnicy (Do Galatów 3:29), żywe kamienie domu duchowego oraz królewskie kapłaństwo (1 Piotra 2:5,9).</p>
+
+                        <p><span class="para-num">¶ 324-346</span>Wybór członków ciała Chrystusowego podczas wieku ewangelii obejmuje kolejne kroki: (1) pokutę i nawrócenie, (2) wiarę i zupełne poświęcenie się na czynienie woli Bożej, (3) usprawiedliwienie przez zasługę krwi Jezusa (Do Rzymian 5:1,9; 8:33), (4) spłodzenie duchem świętym jako „nowe stworzenie” (2 Koryntów 5:17; 1 Piotra 1:3) oraz (5) uświęcenie w prawdzie Słowa Bożego (Ew. Jana 17:17). Wszystko stworzenie oczekuje objawienia się tej klasy (Do Rzymian 8:19).</p>
+
+                        <details class="chapter-questions mt-8 border border-theme rounded-xl overflow-hidden">
+                            <summary class="cursor-pointer px-5 py-3.5 font-sans font-semibold text-sm flex items-center justify-between accent-soft-bg accent-text select-none">
+                                <span>Pytania do Rozdziału VIII (Struna 7)</span>
+                                <span class="text-xs">Kliknij, aby rozwinąć / zwinąć</span>
+                            </summary>
+                            <div class="p-5 font-sans text-sm space-y-2 muted-text">
+                                <ul class="list-disc pl-5 space-y-1.5">
+                                    <li>Co jest ową wielką tajemnicą Bożą i z kogo składa się Chrystus? <strong>¶ 312–314</strong></li>
+                                    <li>Wymień kolejne stopnie prowadzące do stania się nowym stworzeniem w Chrystusie. <strong>¶ 324–336</strong></li>
+                                    <li>Co oznacza namaszczenie i uświęcenie Kościoła? <strong>¶ 338–342</strong></li>
+                                </ul>
+                            </div>
+                        </details>
+                    </div>
+                </article>
+
+                <!-- ROZDZIAŁ IX -->
+                <article id="rozdzial-9" class="book-section book-surface border rounded-2xl p-6 sm:p-12 shadow-sm">
+                    <div class="text-center mb-8">
+                        <span class="text-xs uppercase tracking-widest accent-text font-bold">Rozdział IX • Struna 8</span>
+                        <h2 class="font-serif text-2xl sm:text-3xl font-bold mt-1">Powrót Naszego Pana</h2>
+                    </div>
+
+                    <div class="reader-content">
+                        <p><span class="para-num">¶ 347-366</span>Jezus odchodząc do nieba przyobiecał: „Przyjdę zasię i wezmę was do siebie” (Ew. Jana 14:3), a aniołowie na Górze Oliwnej potwierdzili Jego powrót (Dzieje Apostolskie 1:11). Ma On objąć tron Dawida i ustanowić królestwo sprawiedliwości, które połamie wszystkie inne królestwa (Daniel 2:44; Ezechiel 21:27).</p>
+
+                        <p><span class="para-num">¶ 367-386</span>Jezus nie powraca w ludzkiem ciele, lecz jako niewidzialna, chwalebna istota duchowa („Jeszcze maluczko, a świat mię już więcej nie ogląda” — Ew. Jana 14:19). Grecki wyraz <em>parousia</em> oznacza „obecność”. Pan przychodzi cicho, jak złodziej w nocy (1 Tesalonicensów 5:2), a obecność Jego rozprasza ciemności jak wschodzące słońce (Ew. Mateusza 24:27; Malachiasz 4:2).</p>
+
+                        <p><span class="para-num">¶ 387-410</span>Proroctwo Daniela wskazuje dwie ważne daty: koniec 1260 proroczych dni od r. 539 wskazuje na rok <strong>1799</strong> jako początek „czasu końca” (wyprawa Napoleona do Egiptu, założenie towarzystw biblijnych, nagły wzrost wiedzy i wynalazków — Daniel 12:4), natomiast koniec 1335 dni wskazuje na rok <strong>1874</strong> jako początek wtórej obecności Pańskiej (Daniel 12:12).</p>
+
+                        <p><span class="para-num">¶ 411-444</span>Okres od 1874 r. to czas „żniwa” wieku ewangelii (Ew. Mateusza 13:30), w którym rozdawany był „pokarm na czas słuszny” (Ew. Mateusza 24:45). W roku <strong>1914</strong> skończyły się „czasy pogan” (2520 lat od 606 r. przed Chr.), co zapoczątkowało wojnę światową, rewolucye, powrót Izraela do Palestyny oraz ogłoszenie poselstwa, że „Miliony Ludzi z Obecnie Żyjących Nie Umrą”.</p>
+
+                        <p><span class="para-num">¶ 445-467</span>Trzy główne cele wtórego przyjścia Pana to: (1) związanie Szatana i zniszczenie starego ustroju („starych niebios i ziemi” — 2 Piotra 3:10-13), (2) przyjęcie Oblubienicy — Maluczkiego Stadka 144,000 do chwały (Ew. Mateusza 25:1-13; 1 Tesalonicensów 4:16,17) oraz (3) ustanowienie Królestwa Bożego na ziemi.</p>
+
+                        <details class="chapter-questions mt-8 border border-theme rounded-xl overflow-hidden">
+                            <summary class="cursor-pointer px-5 py-3.5 font-sans font-semibold text-sm flex items-center justify-between accent-soft-bg accent-text select-none">
+                                <span>Pytania do Rozdziału IX (Struna 8)</span>
+                                <span class="text-xs">Kliknij, aby rozwinąć / zwinąć</span>
+                            </summary>
+                            <div class="p-5 font-sans text-sm space-y-2 muted-text">
+                                <ul class="list-disc pl-5 space-y-1.5">
+                                    <li>Co oznacza grecki wyraz <em>parousia</em> i dlaczego obecność Pana jest niewidzialna? <strong>¶ 367–371</strong></li>
+                                    <li>Jaka różnica zachodzi między datą 1799 r. („czas końca”) a datą 1874 r. („obecność Pana”)? <strong>¶ 397–400</strong></li>
+                                    <li>Co wydarzyło się w roku 1914 w związku z końcem „czasów pogan”? <strong>¶ 430–433</strong></li>
+                                    <li>Wylicz trzy główne cele wtórego przyjścia Pana. <strong>¶ 445</strong></li>
+                                </ul>
+                            </div>
+                        </details>
+                    </div>
+                </article>
+
+                <!-- STRUNA 9 I 10 (PODSUMOWANIE KOŃCOWYCH ROZDZIAŁÓW) -->
+                <article id="rozdzial-10-11" class="book-section book-surface border rounded-2xl p-6 sm:p-12 shadow-sm">
+                    <div class="text-center mb-8">
+                        <span class="text-xs uppercase tracking-widest accent-text font-bold">Zwieńczenie Harfy Bożej • Struny 9 i 10</span>
+                        <h2 class="font-serif text-2xl sm:text-3xl font-bold mt-1">Uwielbienie Kościoła oraz Przywrócenie</h2>
+                    </div>
+
+                    <div class="reader-content">
+                        <h3 class="font-serif text-xl font-bold mb-3 accent-text">Rozdział X • Struna 9: Uwielbienie Kościoła (§ 468–534)</h3>
+                        <p><span class="para-num">¶ 468-534</span>Dziewiąta struna Harfy Bożej ukazuje chwalebne wywyższenie wiernych naśladowców Chrystusa. Kościół, liczący 144,000 zwycięzców (Objawienie 7:4; 14:1), po przejściu prób wiary i cierpień na wąskiej drodze otrzymuje w pierwszem zmartwychwstaniu Boską naturę i nieśmiertelność (1 Koryntów 15:51-54; Objawienie 20:6). Jako Oblubienica Baranka, przyobleczona w bisior czysty, zasiada z Chrystusem na Jego tronie (Objawienie 3:21; 19:6-8), tworząc niewidzialne, duchowe Jeruzalem niebieskie, które przez tysiąc lat będzie królować i błogosławić narody.</p>
+
+                        <h3 class="font-serif text-xl font-bold mt-8 mb-3 accent-text">Rozdział XI • Struna 10: Przywrócenie, czyli Restytucya (§ 535–624)</h3>
+                        <p><span class="para-num">¶ 535-624</span>Dziesiąta i ostatnia struna dopełnia harmonii całego Boskiego Planu. „Restytucya” oznacza przywrócenie rodzaju ludzkiego do pierwotnej doskonałości utraconej przez Adama w raju (Dzieje Apostolskie 3:20-21). Pod rządami Nowego Przymierza i widzialnych książąt — wzbudzonych wiernych mężów starożytności, takich jak Abraham, Izaak i Jakób (Psalm 45:16; Do Żydów 11) — błogosławieństwa obejmą najpierw żyjących ludzi, a następnie wszystkich umarłych wyprowadzonych z grobów (Ew. Jana 5:28,29). Ziemia zakwitnie jak ogród Eden (Izajasz 35), choroby i śmierć zostaną całkowicie usunięte (Objawienie 21:4), a wszystkie posłuszne stworzenia w niebie i na ziemi połączą się we wspólnej pieśni chwały dla Jehowy i Baranka (Psalm 150).</p>
+
+                        <div class="mt-8 p-5 rounded-xl border border-theme accent-soft-bg text-sm font-sans">
+                            <p class="font-semibold accent-text mb-1">Nota edytorska do wydania z 1921 r.:</p>
+                            <p class="muted-text">Oryginalny podręcznik obejmował 379 stron (624 ponumerowane paragrafy oraz pytania kontrolne po każdym rozdziale), zakończonych ogłoszeniami o dwutygodniku <em>„Strażnica i Zwiastun Obecności Chrystusa”</em> oraz siedmiotomowej serii <em>„Wykłady Pisma Świętego”</em>.</p>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Dolna nawigacja między sekcjami -->
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 pb-12">
+                    <button id="prev-chapter-btn" type="button"
+                        class="w-full sm:w-auto px-5 py-3 rounded-xl border border-theme book-surface font-medium text-sm flex items-center justify-center gap-2 hover:opacity-80 transition disabled:opacity-40 disabled:cursor-not-allowed">
+                        <span>←</span>
+                        <span id="prev-chapter-label">Poprzednia część</span>
+                    </button>
+
+                    <button id="scroll-top-btn" type="button"
+                        class="px-4 py-2.5 rounded-xl text-xs font-semibold accent-text accent-soft-bg hover:opacity-80 transition">
+                        ↑ Powrót na górę
+                    </button>
+
+                    <button id="next-chapter-btn" type="button"
+                        class="w-full sm:w-auto px-5 py-3 rounded-xl accent-bg text-white font-medium text-sm flex items-center justify-center gap-2 hover:opacity-90 transition disabled:opacity-40 disabled:cursor-not-allowed">
+                        <span id="next-chapter-label">Następna część</span>
+                        <span>→</span>
+                    </button>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Stopka publikacji z metryką bibliograficzną, notą prawną oraz przyciskiem powrotu na górę -->
+    <footer class="book-surface border-t border-theme mt-8 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 py-10 sm:py-12">
+            <div class="max-w-3xl mx-auto">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 pb-8 border-b border-theme">
+                    <!-- Kolumna 1: Metryka bibliograficzna oryginału -->
+                    <div class="space-y-2.5">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full accent-bg"></span>
+                            <h3 class="text-xs font-bold uppercase tracking-wider accent-text">Metryka Bibliograficzna Oryginału</h3>
+                        </div>
+                        <p class="font-serif font-bold text-base">
+                            „Harfa Boża” <span class="font-normal italic muted-text">(ang. „The Harp of God”)</span>
+                        </p>
+                        <ul class="text-xs sm:text-sm muted-text space-y-1 leading-relaxed">
+                            <li><span class="font-semibold">Autor:</span> Joseph Franklin Rutherford</li>
+                            <li><span class="font-semibold">Wydawca oryginału:</span> International Bible Students Association / Peoples Pulpit Association</li>
+                            <li><span class="font-semibold">Miejsce i rok wydania:</span> Brooklyn, New York, U.S.A., 1921 r.</li>
+                            <li><span class="font-semibold">Nakład wydania źródłowego:</span> Wydanie 1,020,000 (379 stron, 624 paragrafy)</li>
+                        </ul>
+                    </div>
+
+                    <!-- Kolumna 2: Nota o statusie prawnym i charakterze publikacji -->
+                    <div class="space-y-2.5">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full accent-bg"></span>
+                            <h3 class="text-xs font-bold uppercase tracking-wider accent-text">Status Prawny i Charakter Edycji</h3>
+                        </div>
+                        <p class="text-xs sm:text-sm muted-text leading-relaxed text-justify">
+                            Niniejsza strona stanowi cyfrową edycję archiwalną tekstu historycznego opublikowanego w <strong>1921 roku</strong> (znajdującego się w <strong>domenie publicznej w Stanach Zjednoczonych</strong>). Publikacja została opracowana i udostępniona wyłącznie w celach <strong>edukacyjnych, badawczych oraz niekomercyjnych</strong>, z zachowaniem oryginalnej pisowni i numeracji paragrafów.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Dolny pasek stopki z przyciskiem powrotu na górę -->
+                <div class="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <p class="text-xs muted-text text-center sm:text-left">
+                        Cyfrowy Czytnik Publikacji Historycznej • Harfa Boża (1921)
+                    </p>
+                    <button id="footer-scroll-top-btn" type="button"
+                        class="px-5 py-2.5 rounded-xl border border-theme accent-soft-bg accent-text text-xs sm:text-sm font-semibold hover:opacity-85 transition flex items-center gap-2 shadow-sm">
+                        <span>Powrót na górę ↑</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const htmlEl = document.documentElement;
+            const bodyEl = document.body;
+
+            // 1. Zarządzanie motywem (Jasny / Ciemny) z zapisem w localStorage
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            const themeLabel = document.getElementById('theme-label');
+            const sunIcon = document.getElementById('theme-icon-sun');
+            const moonIcon = document.getElementById('theme-icon-moon');
+
+            function applyTheme(isDark) {
+                if (isDark) {
+                    htmlEl.classList.add('dark');
+                    themeLabel.textContent = 'Tryb jasny';
+                    sunIcon.classList.remove('hidden');
+                    moonIcon.classList.add('hidden');
+                } else {
+                    htmlEl.classList.remove('dark');
+                    themeLabel.textContent = 'Tryb ciemny';
+                    sunIcon.classList.add('hidden');
+                    moonIcon.classList.remove('hidden');
+                }
+            }
+
+            // Odczyt zapisanego motywu lub preferencji systemowych
+            const savedTheme = localStorage.getItem('harfa-theme');
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            applyTheme(savedTheme ? savedTheme === 'dark' : prefersDark);
+
+            themeToggleBtn.addEventListener('click', () => {
+                const isNowDark = !htmlEl.classList.contains('dark');
+                applyTheme(isNowDark);
+                localStorage.setItem('harfa-theme', isNowDark ? 'dark' : 'light');
+            });
+
+            // 2. Regulacja rozmiaru czcionki (A- / A / A+)
+            const fontSizes = ['font-size-sm', 'font-size-md', 'font-size-lg', 'font-size-xl'];
+            let currentFontIdx = parseInt(localStorage.getItem('harfa-font-idx') || '1', 10);
+            if (isNaN(currentFontIdx) || currentFontIdx < 0 || currentFontIdx >= fontSizes.length) {
+                currentFontIdx = 1;
+            }
+
+            function updateFontSize(idx) {
+                bodyEl.classList.remove(...fontSizes);
+                bodyEl.classList.add(fontSizes[idx]);
+                localStorage.setItem('harfa-font-idx', idx.toString());
+            }
+            updateFontSize(currentFontIdx);
+
+            document.getElementById('font-dec').addEventListener('click', () => {
+                if (currentFontIdx > 0) {
+                    currentFontIdx--;
+                    updateFontSize(currentFontIdx);
+                }
+            });
+
+            document.getElementById('font-reset').addEventListener('click', () => {
+                currentFontIdx = 1;
+                updateFontSize(currentFontIdx);
+            });
+
+            document.getElementById('font-inc').addEventListener('click', () => {
+                if (currentFontIdx < fontSizes.length - 1) {
+                    currentFontIdx++;
+                    updateFontSize(currentFontIdx);
+                }
+            });
+
+            // 3. Wysuwany Spis Treści na urządzeniach mobilnych
+            const tocSidebar = document.getElementById('toc-sidebar');
+            const tocBackdrop = document.getElementById('toc-backdrop');
+            const tocToggleBtn = document.getElementById('toc-toggle-btn');
+            const tocCloseBtn = document.getElementById('toc-close-btn');
+
+            function openToc() {
+                tocSidebar.classList.remove('-translate-x-full');
+                tocBackdrop.classList.remove('hidden');
+            }
+
+            function closeToc() {
+                tocSidebar.classList.add('-translate-x-full');
+                tocBackdrop.classList.add('hidden');
+            }
+
+            tocToggleBtn.addEventListener('click', () => {
+                if (tocSidebar.classList.contains('-translate-x-full')) {
+                    openToc();
+                } else {
+                    closeToc();
+                }
+            });
+
+            tocCloseBtn.addEventListener('click', closeToc);
+            tocBackdrop.addEventListener('click', closeToc);
+
+            document.querySelectorAll('.toc-link').forEach(link => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth < 1024) closeToc();
+                });
+            });
+
+            // 4. Pasek postępu czytania oraz podświetlanie aktywnego rozdziału w TOC
+            const progressBar = document.getElementById('reading-progress');
+            const sections = Array.from(document.querySelectorAll('.book-section'));
+            const tocLinks = Array.from(document.querySelectorAll('.toc-link'));
+            const prevBtn = document.getElementById('prev-chapter-btn');
+            const nextBtn = document.getElementById('next-chapter-btn');
+            const prevLabel = document.getElementById('prev-chapter-label');
+            const nextLabel = document.getElementById('next-chapter-label');
+            let activeSectionIndex = 0;
+
+            function updateScrollState() {
+                const scrollTop = window.scrollY;
+                const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+                const scrollPercent = docHeight > 0 ? Math.min(100, Math.max(0, (scrollTop / docHeight) * 100)) : 0;
+                progressBar.style.width = scrollPercent + '%';
+
+                // Wykrywanie bieżącej sekcji
+                const triggerOffset = scrollTop + 160;
+                sections.forEach((sec, idx) => {
+                    if (sec.offsetTop <= triggerOffset) {
+                        activeSectionIndex = idx;
+                    }
+                });
+
+                const currentId = sections[activeSectionIndex]?.id;
+                tocLinks.forEach(link => {
+                    const hrefId = link.getAttribute('href').replace('#', '');
+                    if (hrefId === currentId) {
+                        link.classList.add('active');
+                    } else {
+                        link.classList.remove('active');
+                    }
+                });
+
+                // Aktualizacja dolnych przycisków Poprzednia / Następna część
+                prevBtn.disabled = activeSectionIndex <= 0;
+                nextBtn.disabled = activeSectionIndex >= sections.length - 1;
+
+                if (activeSectionIndex > 0) {
+                    const prevTitle = sections[activeSectionIndex - 1].querySelector('h1, h2')?.textContent || 'Poprzednia część';
+                    prevLabel.textContent = prevTitle.length > 26 ? prevTitle.slice(0, 26) + '…' : prevTitle;
+                } else {
+                    prevLabel.textContent = 'Początek księgi';
+                }
+
+                if (activeSectionIndex < sections.length - 1) {
+                    const nextTitle = sections[activeSectionIndex + 1].querySelector('h1, h2')?.textContent || 'Następna część';
+                    nextLabel.textContent = nextTitle.length > 26 ? nextTitle.slice(0, 26) + '…' : nextTitle;
+                } else {
+                    nextLabel.textContent = 'Koniec księgi';
+                }
+            }
+
+            window.addEventListener('scroll', updateScrollState, { passive: true });
+            updateScrollState();
+
+            prevBtn.addEventListener('click', () => {
+                if (activeSectionIndex > 0) {
+                    sections[activeSectionIndex - 1].scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+
+            nextBtn.addEventListener('click', () => {
+                if (activeSectionIndex < sections.length - 1) {
+                    sections[activeSectionIndex + 1].scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+
+            document.getElementById('scroll-top-btn').addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            const footerScrollTopBtn = document.getElementById('footer-scroll-top-btn');
+            if (footerScrollTopBtn) {
+                footerScrollTopBtn.addEventListener('click', () => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            }
+
+            // 5. Rozwijanie / zwijanie wszystkich sekcji pytań
+            const toggleAllQuestionsBtn = document.getElementById('toggle-all-questions');
+            let allExpanded = false;
+
+            toggleAllQuestionsBtn.addEventListener('click', () => {
+                allExpanded = !allExpanded;
+                document.querySelectorAll('.chapter-questions').forEach(detail => {
+                    detail.open = allExpanded;
+                });
+            });
+        });
+    </script>
+</body>
+</html>
